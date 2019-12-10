@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Final Project Visi Komputer</title>
-    
+
     <!-- Style -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <style>
@@ -15,7 +15,7 @@
             width: auto;
             overflow-y: auto;
         }
-        
+
         .gambar {
             width: 100px;
             height: auto;
@@ -33,9 +33,8 @@
                 <div class="col-sm-4 text-center">
                     <h3> LOG </h3>
                     <div class="nganu">
-                        <?php $data_id = 0; ?>
                         @foreach ($deteksis as $deteksi)
-                            <div class="deteksi-{{ $data_id++ }}">
+                            <div class="deteksi-{{ $deteksi->id }}">
                                 <img class="img-fluid rounded gambar" src="{{ URL::asset($deteksi->gambar) }}">
                                 <label class="nama">Nama: {{ $deteksi->nama }}</label>
                                 <label class="waktu">Waktu: {{ $deteksi->waktu }}</label>
@@ -54,6 +53,12 @@
     <script>
         let jsonData = new Array();
         // Melakukan update setiap 1 detik sekali
+        const removeChildren = (node) => {
+            while (node.firstChild) {
+                node.removeChild(node.firstChild);
+            }
+        }
+
         $(document).ready(function() {
             setInterval(function() {
                 $.ajax({
@@ -61,10 +66,32 @@
                     dataType: 'json',
                     data: {
                         "_token": "{{ csrf_token() }}",
-                        
+
                     },
                     success: function(response) {
                         jsonData = response;
+                        console.log(jsonData);
+                        let logDiv = document.querySelector('.nganu');
+                        let fragment = document.createDocumentFragment();
+                        for (const data of jsonData) {
+                            let dataDiv = document.createElement('div');
+                            dataDiv.setAttribute('class', `deteksi-${data.id}`);
+                            let image = document.createElement('img');
+                            image.setAttribute('class', 'img-fluid rounded gambar');
+                            image.setAttribute('src', `${data.gambar}`);
+                            dataDiv.appendChild(image)
+                            let nama = document.createElement('label');
+                            nama.setAttribute('class', 'nama');
+                            nama.textContent = `Nama: ${data.nama}`;
+                            let waktu = document.createElement('label');
+                            waktu.setAttribute('class', 'waktu');
+                            waktu.textContent = `Waktu: ${data.waktu}`;
+                            dataDiv.appendChild(nama);
+                            dataDiv.appendChild(waktu);
+                            fragment.appendChild(dataDiv);
+                        }
+                        removeChildren(logDiv);
+                        logDiv.appendChild(fragment);
                     },
                     error: function(response) {
                         jsonData = null;
@@ -72,10 +99,7 @@
                 });
 
 
-            }, 1000);
-        });
-        $('.deteksi-1').children().each(function() {
-            $(this).attr();
+            }, 5000);
         });
     </script>
 </body>
