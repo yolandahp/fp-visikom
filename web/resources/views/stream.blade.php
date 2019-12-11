@@ -28,7 +28,9 @@
         <div class="container">
             <div class="row">
                 <div class="col-sm-8">
-                    <img class="img-fluid rounded" src="{{ URL::asset('/images/dummy720.png') }}">
+                    <video class="img-fluid rounded" width="1280" height="720" autoplay loop muted controls>
+                        <source src="{{ env('STREAM_URL') }}" type="video/ogg" />
+                    </video>
                 </div>
                 <div class="col-sm-4 text-center">
                     <h3> LOG </h3>

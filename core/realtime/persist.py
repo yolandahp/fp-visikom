@@ -22,6 +22,7 @@ DB_URI = 'mysql+mysqlconnector://{user}:{password}@{host}/{database}'.format(
     database=os.getenv('DB_DATABASE'))
 
 IMAGE_PATH = os.getenv('IMAGE_PATH')
+WEB_PATH = '../../web/public'
 engine = create_engine(DB_URI)
 
 Session = sessionmaker(bind=engine)
@@ -60,14 +61,15 @@ def worker_persist(queue: Queue):
             data: Person = queue.get()
             image = data.image
             image = imutils.resize(image, width=200)
-            image_path = os.path.join(
-                IMAGE_PATH, '{}.png'.format(secrets.token_urlsafe(16)))
-            image_path = image_path.replace(os.sep, '/')
+            filename = '{}.png'.format(secrets.token_urlsafe(16))
+            image_path = os.path.join(WEB_PATH, IMAGE_PATH, filename)
             cv2.imwrite(image_path, image)
 
+            path_saved = os.path.join(IMAGE_PATH, filename)
+            path_saved = path_saved.replace(os.sep, '/')
             session = Session()
             deteksi = Deteksi(data.identity, data.time, data.probability,
-                              image_path)
+                              path_saved)
             session.add(deteksi)
             session.commit()
             session.close()
