@@ -10,22 +10,37 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <style>
         .nganu {
-            background-color: grey;
             height: 25em;
             width: auto;
             overflow-y: auto;
         }
 
-        .gambar {
-            width: 100px;
-            height: auto;
-            max-height: 100px;
+        .deteksi {
+            margin-right: 0 !important;
+            margin-bottom: 20px;
         }
+
+        .jumbotron{
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            display: table;
+            margin-bottom: 0 !important;
+        }
+
+        .main-container{
+            vertical-align: middle;
+            display: table-cell;
+        }
+
+
     </style>
 </head>
 <body>
     <div class="jumbotron">
-        <div class="container">
+        <div class="container main-container">
             <div class="row">
                 <div class="col-sm-8">
                     <video class="img-fluid rounded" width="1280" height="720" autoplay loop muted controls>
@@ -34,12 +49,14 @@
                 </div>
                 <div class="col-sm-4 text-center">
                     <h3> LOG </h3>
-                    <div class="nganu">
+                    <div class="nganu border border-secondary rounded">
                         @foreach ($deteksis as $deteksi)
-                            <div class="deteksi-{{ $deteksi->id }}">
-                                <img class="img-fluid rounded gambar" src="{{ URL::asset($deteksi->gambar) }}">
-                                <label class="nama">Nama: {{ $deteksi->nama }}</label>
-                                <label class="waktu">Waktu: {{ $deteksi->waktu }}</label>
+                            <div class="row deteksi deteksi-{{ $deteksi->id }}">
+                                <img class="col-md-4 img-fluid rounded gambar" src="{{ URL::asset($deteksi->gambar) }}">
+                                <div class="col-md-8 data-text">
+                                    <label class="row nama">Nama: {{ $deteksi->nama }}</label>
+                                    <label class="row waktu">Waktu: {{ $deteksi->waktu }}</label>
+                                </div>
                             </div>
                         @endforeach
                     </div>
@@ -77,19 +94,26 @@
                         let fragment = document.createDocumentFragment();
                         for (const data of jsonData) {
                             let dataDiv = document.createElement('div');
-                            dataDiv.setAttribute('class', `deteksi-${data.id}`);
+                            dataDiv.setAttribute('class', `deteksi-${data.id} row deteksi`);
+
                             let image = document.createElement('img');
-                            image.setAttribute('class', 'img-fluid rounded gambar');
+                            image.setAttribute('class', 'col-md-4 img-fluid rounded gambar');
                             image.setAttribute('src', `${data.gambar}`);
                             dataDiv.appendChild(image)
+
                             let nama = document.createElement('label');
-                            nama.setAttribute('class', 'nama');
+                            nama.setAttribute('class', 'row nama');
                             nama.textContent = `Nama: ${data.nama}`;
                             let waktu = document.createElement('label');
-                            waktu.setAttribute('class', 'waktu');
+                            waktu.setAttribute('class', 'row waktu');
                             waktu.textContent = `Waktu: ${data.waktu}`;
-                            dataDiv.appendChild(nama);
-                            dataDiv.appendChild(waktu);
+
+                            let text = document.createElement('div');
+                            text.setAttribute('class', 'data-text col-md-8');
+                            text.appendChild(nama);
+                            text.appendChild(waktu);
+
+                            dataDiv.appendChild(text);
                             fragment.appendChild(dataDiv);
                         }
                         removeChildren(logDiv);
